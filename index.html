@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Intro to Chef</title>
+    <meta name="description" content="An introduction to Chef">
+    <meta name="author" content="Robert Ryterski">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/night.css" id="theme">
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/tomorrow-night-bright.css">
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <!-- title -->
+        <section>
+          <h1>Intro to Chef</h1>
+          <h3>a quick primer</h3>
+          <p>
+            <small><a href="http://bobby.ryterski.net">Bobby Ryterski</a></small>
+          </p>
+        </section>
+        <!-- intro -->
+        <section>
+          <section>
+            <h2>What is Chef?</h2>
+            <p>a configuration management tool from <a href="http://www.opscode.com/">Opscode</a></p>
+          </section>
+          <section>
+            <p>what is configuration management?</p>
+          </section>
+          <section>
+            <h2>Configuration Management</h2>
+            <p>in general, how a "system" should be configured and maintained</p>
+            <p>for Chef, how servers are configured</p>
+            <p>can be:
+              <ul>
+                <li>network settings</li>
+                <li>services provided</li>
+                <li>software settings</li>
+                <li>etc</li>
+              </ul>
+            </p>
+            <aside class="notes">
+              <p>Configuration management is a process of defining the desired state of a system and managing how that state changes over time. Think SCM but for infrastructure.</p>
+              <p>Configuration management is not just for IT, but any complex system.</p>
+            </aside>
+          </section>
+          <section>
+            <p>so...</p>
+          </section>
+          <section>
+            <h2>What is Chef?</h2>
+            <ul>
+              <li>set of tools to manage servers</li>
+              <li>provides Ruby framework for describing configuration</li>
+            </ul>
+            <aside class="notes">
+              <p>Parts of Chef track how servers are supposed to be configured (Chef server) while others actually do the configuration (Chef client).</p>
+            </aside>
+          </section>
+        </section>
+        <!-- mantra -->
+        <section>
+          <section>
+            <h2>Mantra</h2>
+            <em>infrastructure as code</em>
+          </section>
+          <section>
+            <p>what?</p>
+          </section>
+          <section>
+            <h2>Meaning</h2>
+            <p>manage the infrastructure running your code the same way you manage your code</p>
+            <aside class="notes">
+              <p>Use Chef concepts, tools to write code that describes your infrastructure.</p>
+              <p>Application code is source controlled and reviewed, why not do the same for the platform that runs the code?</p>
+            </aside>
+          </section>
+        </section>
+        <!-- basic concepts -->
+        <section>
+          <h2>Basic Concepts</h2>
+          <ul>
+            <li>nodes</li>
+            <li>resources</li>
+            <li>recipes</li>
+            <li>cookbooks</li>
+            <li>roles</li>
+          </ul>
+          <aside class="notes">
+            <p>The most important items to understand are nodes and recipes. They are the most basic concepts for representing the machine to configure and how to configure it. After that, cookbooks and roles can be seen as containers or descriptors for recipes and nodes.</p>
+          </aside>
+        </section>
+        <!-- node -->
+        <section>
+          <h2>Node</h2>
+          <ul>
+            <li>an individual computer managed by Chef, the client</li>
+            <li>has derived attributes like OS, RAM, IP address</li>
+            <li>can have user defined attributes</li>
+            <li>has a list of tasks to run
+              <ul><li>derived from assigned recipes, roles</li></ul>
+            </li>
+          </ul>
+          <aside class="notes">
+            <p>A node is just a computer. Chef doesn't care if it's physical or virtual.</p>
+            <p>Chef has a tool called <a href="http://docs.opscode.com/ohai.html">Ohai</a> to discover the attributes like OS and RAM.</p>
+          </aside>
+        </section>
+        <!-- resource -->
+        <section>
+          <section>
+            <h2>Resource</h2>
+            <ul>
+              <li>a reusable component for use in recipes</li>
+              <li>provides some function, does some action</li>
+              <li>depends on a provider to adapt the action for the platform</li>
+              <li>may have many providers for many different platforms</li>
+              <li>is a Ruby class that extends base Chef resource and provider</li>
+            </ul>
+            <aside class="notes">
+              <p>Chef likes to use the term LWRP, LightWeight Reusable Resource / Provider</p>
+              <p>The resource defines the action, like installing a software package. The provider adapts the action for the platform (OS), so Debian based Linux would use apt while Red Hat based Linux would use yum.</p>
+            </aside>
+          </section>
+          <section>
+            <h2>Example Resources</h2>
+            <ul>
+              <li><a href="http://docs.opscode.com/resource_directory.html">directory</a></li>
+              <li><a href="http://docs.opscode.com/resource_package.html">remote_file</a></li>
+              <li><a href="http://docs.opscode.com/resource_remote_file.html">package</a></li>
+              <li><a href="http://docs.opscode.com/resource_bash.html">bash</a></li>
+            </ul>
+            <aside class="notes">
+              <p>Chef comes with bundled with many LWRPs for most standard system tasks. There are also many community provided LWRPs available.</p>
+            </aside>
+          </section>
+        </section>
+        <!-- recipe -->
+        <section>
+          <section>
+            <h2>Recipe</h2>
+            <ul>
+              <li>set of tasks to perform using resources</li>
+              <li>may be included in other recipes</li>
+              <li>may use node attributes</li>
+              <li>must be idempotent</li>
+              <li>is a Ruby script</li>
+            </ul>
+            <aside class="notes">
+              <p>Recipes are where the bulk of the work gets done. To use the chef analogy, recipes tell Chef how to make the dish (your app) and serve it.</p>
+              <p>Chef recipes are supposed to be idempotent, so that the recipe can be run over and over as needed without breaking anything. This is very important when a single node has multiple services installed via recipes: when service A needs to be updated by a new run of the A recipe, the recipe for service B shouldn't break service B.</p>
+            </aside>
+          </section>
+          <section>
+            <h2>Example Recipe</h2>
+            <pre><code data-trim>
+# Cookbook name:: your_app
+# Recipe:: default
+
+remote_file "/tmp/thing/tarball.tar.gz" do
+  action :create
+  source "http://example.com/your/tarball.tar.gz"
+  backup false
+  mode "0755"
+end
+
+execute "unarchive tarball for install" do
+  cwd '/tmp/thing'
+  command "tar zxf tarball.tar.gz -C #{node[:your_app][:dir]} && rm tarball.tar.gz"
+  only_if {::File.file?("/tmp/tarball.tar.gz")}
+end
+
+template "/etc/init.d/your_app" do
+  owner "root"
+  group "root"
+  source "your_app.erb"
+  mode "0755"
+end
+
+service "your_app" do
+  supports status: true, restart: true
+  action :enable
+end
+
+service "your_app" do
+  action :restart
+end
+            </code></pre>
+            <aside class="notes">
+              <p>What's going on?
+                <ol>
+                  <li>metadata</li>
+                  <li>downloading a remote file</li>
+                  <li>executing an arbitrary command</li>
+                  <li>creating a file from a template</li>
+                  <li>enabling a service</li>
+                  <li>restarting a service</li>
+                </ol>
+              </p>
+          </section>
+        </section>
+        <!-- cookbook -->
+        <section>
+          <section>
+            <h2>Cookbook</h2>
+            <ul>
+              <li>a distributable collection of components needed to run one or more recipes</li>
+              <li>may include:
+                <ul>
+                  <li>resources, providers</li>
+                  <li>recipes</li>
+                  <li>node attributes</li>
+                  <li>files / templates</li>
+                  <li>etc</li>
+                </ul>
+              </li>
+              <li>are versioned</li>
+              <li>are folders with files in a specific structure</li>
+            </ul>
+            <aside class="notes">
+              <p>Cookbooks are how recipes are managed in Chef. The entire cookbook (likely the recipe and dependices) is put in the Chef repository for use. When a node tries to execute it's run list, it grabs all the required cookbooks.</p>
+            </aside>
+          </section>
+          <section>
+            <h2>Cookbook Layout</h2>
+            <!-- format none -->
+            <pre><code data-trim>
+/path/to/your_cookbook
+├── README.md
+├── attributes
+├── definitions
+├── files
+│   └── default
+├── libraries
+├── metadata.rb
+├── providers
+├── recipes
+│   └── default.rb
+├── resources
+└── templates
+    └── default
+            </code></pre>
+          </section>
+          <aside class="notes">
+            <p>Each type of object goes in the respective folder.</p>
+        </section>
+        <!-- role -->
+        <section>
+          <section>
+            <h2>Role</h2>
+            <ul>
+              <li>describes a service or functionality for the node to have
+                <ul>
+                  <li>web server (configure Apache)</li>
+                  <li>database server (configure PostgreSQL)</li>
+                  <li>etc</li>
+                </ul>
+              </li>
+              <li>has attributes related to the functionality</li>
+              <li>has a run list with one or more recipes</li>
+              <li>is a Ruby script</li>
+            </ul>
+            <aside class="notes">
+              <p>Roles make managing the recipes that run on a node easier. They allow grouping recipes by service, like installing a database and the webapp that uses it.</p>
+              <p>A role can override the default settings for a recipe, this lets generic recipes be used for many specific instances</p>
+            </aside>
+          </section>
+          <section>
+            <h2>Example Role</h2>
+            <pre><code data-trim>
+name "your_app_prod"
+description "Deploys your_app in the production environment"
+
+run_list(
+  "recipe[your_app_backend]",
+  "recipe[your_app_frontend]"
+)
+
+override_attributes(
+  :your_app_backend => { :port = 4242 },
+  :important_dependency => {
+    :some_setting => true,
+    :other_setting => "/path/to/cool/file"
+  }
+)
+            </code></pre>
+            <aside class="notes">
+              <p>What's going on?
+                <ol>
+                  <li>metadata</li>
+                  <li>a list of tasks (in this case, recipes) to perform</li>
+                  <li>a list of attributes to set (in this case, override any other values)</li>
+                </ol>
+              </p>
+            </aside>
+          </section>
+        </section>
+        <!-- got it? -->
+        <section>
+          <p>got it?</p>
+        </section>
+        <!-- usage -->
+        <section>
+          <h2>Using Chef</h2>
+          <p>either client-server or standalone</p>
+        </section>
+        <!-- client-server -->
+        <section>
+          <section>
+            <h2>Chef Server</h2>
+            <ul>
+              <li>common management endpoint</li>
+              <li>configure through CLI or web UI</li>
+              <li>keeps a database of everything</li>
+              <li>register nodes to the server</li>
+              <li>register users (clients) to manage the server</li>
+              <li>clients upload roles, cookbooks</li>
+            </ul>
+          </section>
+          <section>
+            <h2>Chef Client</h2>
+            <ul>
+              <li>command run on node</li>
+              <li>only available after bootstrapping</li>
+              <li>syncs roles, run list for the current node</li>
+              <li>executes run list</li>
+            </ul>
+            <aside class="notes">
+              <p>Bootstrapping is the one time initial setup of a new node. It installs the required Chef files to the node and sets the configuration specific to the node.</p>
+              <p>When syncing, the client will actually download all the cookbooks needed to complete the run list.</p>
+            </aside>
+          </section>
+          <section>
+            <h2>Knife</h2>
+            <ul>
+              <li>the workstation CLI configuration tool</li>
+              <li>used to manage nodes, cookbooks, roles, etc.</li>
+              <li>used to bootstrap new nodes</li>
+            </ul>
+            <aside class="notes">
+              <p>Knife is a versatile tool that can be used to do just about everything with Chef from the command line.</p>
+              <p>Like everything else with Chef, Knife can be extended.</p>
+            </aside>
+          </section>
+        </section>
+        <section>
+          <h2>Chef Solo</h2>
+          <ul>
+            <li>one is the loneliest number => no server</li>
+            <li>add roles, cookbooks, etc. right on the node</li>
+            <li>use chef-solo to run the run_list</li>
+          </ul>
+          <aside class="notes">
+            <p>Chef solo lets you use the power of Chef on a single machine without the need to set up a full Chef server.</p>
+          </aside>
+        </section>
+        <!-- not covered -->
+        <section>
+          <section>
+            <p>is that it?</p>
+          </section>
+          <section>
+            <em>no</em>
+          </section>
+          <section>
+            <p>there are a few other components</p>
+            <p>(data bags, environments, ...)</p>
+            <p>and best practices</p>
+          </section>
+          <section>
+            <p>but that's for another time</p>
+          </section>
+        </section>
+        <!-- resources -->
+        <section>
+          <h2>More Resources</h2>
+          <ul>
+            <li><a href="http://learnchef.opscode.com/">#learnchef</a></li>
+            <li><a href="http://www.mynameiskate.com/visual-guide-to-chef/">visual guide to Chef</a></li>
+            <li><a href="http://docs.opscode.com/">Chef docs</a></li>
+            <li><a href="http://vagrantup.com/">Vagrant</a></li>
+            <li><a href="http://berkshelf.com/">Berkshelf</a></li>
+          </ul>
+          <aside class="notes">
+            <p>#learnchef is a collection of "getting started" material for Chef, put together by Opscode.</p>
+            <p>Vagrant is a virtual machine manager for development environments that supports configuration via Chef. That makes it great for testing cookbooks.</p>
+            <p>Berkshelf is a cookbook dependency manager.</p>
+          </aside>
+        </section>
+      </div>
+    </div>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.min.js"></script>
+    <script>
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        rollingLinks: false,
+        theme: 'night',
+        transition: 'linear',
+        dependencies: [
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+    </script>
+  </body>
+</html>
